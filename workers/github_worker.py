@@ -2,7 +2,8 @@ import os
 import re
 import subprocess
 import unicodedata
-from datetime import datetime
+
+from workers.agent_executor import execute_minimal_task
 
 
 PROTECTED_BRANCHES = {"main", "master"}
@@ -86,36 +87,6 @@ def _current_branch(project_path, runner=default_runner):
     return _run(["git", "branch", "--show-current"], project_path, runner)
 
 
-def write_task_run_summary(project_path, task):
-    task_id = _slugify(task.get("id", "task"))
-    output_path = os.path.join("generated", "task_runs", f"{task_id}.md")
-    _write_project_file(project_path, output_path, _task_summary_content(task))
-    return output_path
-
-
-def _write_project_file(project_path, relative_path, content):
-    normalized = os.path.normpath(relative_path)
-    if normalized.startswith("..") or os.path.isabs(normalized):
-        raise TaskValidationError(f"Unsafe output path: {relative_path}")
-
-    path = os.path.join(project_path, normalized)
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(content)
-
-
-def _task_summary_content(task):
-    return (
-        f"# {task['title']}\n\n"
-        f"- Task ID: {task.get('id', 'manual')}\n"
-        f"- Department: {task.get('department', 'unknown')}\n"
-        f"- Status at run: {task.get('status', 'unknown')}\n"
-        f"- Generated at: {datetime.utcnow().isoformat()}Z\n"
-        f"\n## Description\n\n{task['description']}\n"
-        f"\n## Acceptance Criteria\n\n{task.get('acceptance_criteria', 'Not provided.')}\n"
-    )
-
-
 def execute_task(task, project_path, runner=default_runner, preflight=True):
     task = validate_task(task)
     project_path = os.path.abspath(os.path.expanduser(project_path))
@@ -132,8 +103,9 @@ def execute_task(task, project_path, runner=default_runner, preflight=True):
 
     print(f"Creating branch: {branch}")
     _run(["git", "checkout", "-b", branch], project_path, runner)
-    output_path = write_task_run_summary(project_path, task)
-    print(f"Wrote task run summary: {output_path}")
+    execution = execute_minimal_task(project_path, task)
+    print(f"Execution plan: {'; '.join(execution['plan'])}")
+    print(f"Files changed: {', '.join(execution['files_changed'])}")
 
     status_after = _run(["git", "status", "--porcelain"], project_path, runner)
     if not status_after:
@@ -167,7 +139,7 @@ def execute_task(task, project_path, runner=default_runner, preflight=True):
         "task_id": task.get("id"),
         "branch": branch,
         "pr_url": pr_url,
-        "output_path": output_path,
+        "files_changed": execution["files_changed"],
     }
 
 
