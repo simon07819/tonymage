@@ -17,7 +17,7 @@ class AgentExecutorTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as project_path:
             result = execute_minimal_task(project_path, task)
-            expected = os.path.join("src", "backend", "implement-api-endpoints.py")
+            expected = os.path.join("backend", "implement-api-endpoints.py")
             path = os.path.join(project_path, expected)
 
             self.assertEqual(target_file_for_task(task), expected)

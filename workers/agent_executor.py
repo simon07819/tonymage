@@ -27,6 +27,10 @@ def code_category(task):
     category = task_category(task).lower()
     title = task.get("title", "").lower()
     text = f"{category} {title}"
+    if "database" in text or "schema" in text or "model" in text:
+        return "database"
+    if "test" in text or "qa" in text:
+        return "tests"
     if "frontend" in text or "ui" in text:
         return "frontend"
     if "backend" in text or "api" in text:
@@ -38,12 +42,19 @@ def target_file_for_task(task):
     code_area = code_category(task)
     title = slugify(task.get("title", "task"))
     if code_area == "backend":
-        return os.path.join("src", "backend", f"{title}.py")
+        return os.path.join("backend", f"{title}.py")
     if code_area == "frontend":
-        return os.path.join("src", "frontend", f"{title}.js")
+        return os.path.join("src", "components", f"{title}.js")
+    if code_area == "database":
+        return os.path.join("models", f"{title}.py")
+    if code_area == "tests":
+        return os.path.join("tests", f"test_{title.replace('-', '_')}.py")
 
     category = slugify(task_category(task))
-    return os.path.join("docs", category, f"{title}.md")
+    path = os.path.join("docs", category, f"{title}.md")
+    if path.startswith("docs/"):
+        return os.path.join("backend", f"{title}.py")
+    return path
 
 
 def execute_minimal_task(project_path, task):
@@ -72,8 +83,13 @@ def render_task_artifact(task):
 
 
 def render_code_artifact(task):
-    if code_category(task) == "frontend":
+    area = code_category(task)
+    if area == "frontend":
         return render_frontend_module(task)
+    if area == "database":
+        return render_database_model(task)
+    if area == "tests":
+        return render_test_module(task)
     return render_backend_module(task)
 
 
@@ -105,6 +121,28 @@ def render_frontend_module(task):
         f"    acceptanceCriteria: {task.get('acceptance_criteria', 'Not provided.')!r},\n"
         f"  }};\n"
         f"}}\n"
+    )
+
+
+def render_database_model(task):
+    class_name = "".join(part.capitalize() for part in slugify(task.get("title", "task")).split("-"))
+    return (
+        f'"""{task["title"]} model stub."""\n\n'
+        f"class {class_name}Model:\n"
+        f"    task_id = {task.get('id')!r}\n"
+        f"    category = {task_category(task)!r}\n\n"
+        f"    def acceptance_criteria(self):\n"
+        f"        return {task.get('acceptance_criteria', 'Not provided.')!r}\n"
+    )
+
+
+def render_test_module(task):
+    function_name = slugify(task.get("title", "task")).replace("-", "_")
+    return (
+        f'"""Minimal tests for {task["title"]}."""\n\n'
+        f"def test_{function_name}_plan_exists():\n"
+        f"    plan = {plan_task(task)!r}\n"
+        f"    assert plan\n"
     )
 
 
