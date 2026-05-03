@@ -23,15 +23,32 @@ def plan_task(task):
     ]
 
 
+def code_category(task):
+    category = task_category(task).lower()
+    title = task.get("title", "").lower()
+    text = f"{category} {title}"
+    if "frontend" in text or "ui" in text:
+        return "frontend"
+    if "backend" in text or "api" in text:
+        return "backend"
+    return None
+
+
 def target_file_for_task(task):
-    category = slugify(task_category(task))
+    code_area = code_category(task)
     title = slugify(task.get("title", "task"))
+    if code_area == "backend":
+        return os.path.join("src", "backend", f"{title}.py")
+    if code_area == "frontend":
+        return os.path.join("src", "frontend", f"{title}.js")
+
+    category = slugify(task_category(task))
     return os.path.join("docs", category, f"{title}.md")
 
 
 def execute_minimal_task(project_path, task):
     relative_path = target_file_for_task(task)
-    content = render_task_artifact(task)
+    content = render_code_artifact(task) if code_category(task) else render_task_artifact(task)
     write_project_file(project_path, relative_path, content)
     return {
         "plan": plan_task(task),
@@ -51,6 +68,43 @@ def render_task_artifact(task):
         + "\n".join(f"{index}. {step}" for index, step in enumerate(plan, start=1))
         + "\n\n## Acceptance Criteria\n\n"
         + f"{task.get('acceptance_criteria', 'Define acceptance criteria during implementation.')}\n"
+    )
+
+
+def render_code_artifact(task):
+    if code_category(task) == "frontend":
+        return render_frontend_module(task)
+    return render_backend_module(task)
+
+
+def render_backend_module(task):
+    function_name = slugify(task.get("title", "task")).replace("-", "_")
+    return (
+        f'"""{task["title"]}.\n\n'
+        f'{task["description"]}\n'
+        f'"""\n\n'
+        f"def {function_name}_plan():\n"
+        f"    return {{\n"
+        f"        \"task_id\": {task.get('id')!r},\n"
+        f"        \"category\": {task_category(task)!r},\n"
+        f"        \"steps\": {plan_task(task)!r},\n"
+        f"        \"acceptance_criteria\": {task.get('acceptance_criteria', 'Not provided.')!r},\n"
+        f"    }}\n"
+    )
+
+
+def render_frontend_module(task):
+    function_name = slugify(task.get("title", "task")).replace("-", "")
+    return (
+        f"export function {function_name}Plan() {{\n"
+        f"  return {{\n"
+        f"    taskId: {task.get('id')!r},\n"
+        f"    category: {task_category(task)!r},\n"
+        f"    title: {task.get('title')!r},\n"
+        f"    steps: {plan_task(task)!r},\n"
+        f"    acceptanceCriteria: {task.get('acceptance_criteria', 'Not provided.')!r},\n"
+        f"  }};\n"
+        f"}}\n"
     )
 
 
