@@ -6,8 +6,10 @@
   "acceptance_criteria": "Task management feature is fully functional and integrated with project initiation feature.",
   "estimated_cost_usd": 3000,
   "branch_name": "feature/task-management",
-  "status": "running",
+  "status": "completed_real",
   "mode": "REAL",
   "branch": "ai-company/task-2-develop-task-management-feature",
-  "started_at": "2026-05-03T04:05:17.393041"
+  "started_at": "2026-05-03T04:05:17.393041",
+  "pr_url": "https://github.com/simon07819/tonymage/pull/2",
+  "completed_at": "2026-05-03T04:05:20.263493"
 }
