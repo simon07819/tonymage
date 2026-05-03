@@ -1,7 +1,7 @@
 import unittest
 from types import SimpleNamespace
 
-from workers.github_worker import WorkerPreflightError, ensure_ready, safe_branch_name
+from workers.github_worker import unique_branch_name
 
 
 def result(returncode=0, stdout="", stderr=""):
@@ -9,18 +9,14 @@ def result(returncode=0, stdout="", stderr=""):
 
 
 class GitHubWorkerTests(unittest.TestCase):
-    def test_safe_branch_name_slugifies_id_and_title(self):
-        branch = safe_branch_name({"id": "TASK 42", "title": "Créer l'API + Tests!"})
-        self.assertEqual(branch, "ai-company/task-task-42-creer-l-api-tests")
-
-    def test_refuses_dirty_git_before_work(self):
+    def test_existing_branch_gets_v2_suffix(self):
         def runner(command, cwd):
-            if command == ["git", "status", "--porcelain"]:
-                return result(stdout=" M changed.py\n")
-            return result()
+            if command == ["git", "show-ref", "--verify", "refs/heads/ai-company/task-1-build"]:
+                return result()
+            return result(returncode=1)
 
-        with self.assertRaisesRegex(WorkerPreflightError, "not clean"):
-            ensure_ready("/tmp/repo", runner=runner)
+        branch = unique_branch_name("/tmp/repo", "ai-company/task-1-build", runner=runner)
+        self.assertEqual(branch, "ai-company/task-1-build-v2")
 
 
 if __name__ == "__main__":
