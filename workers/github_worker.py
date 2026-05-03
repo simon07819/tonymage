@@ -152,6 +152,8 @@ def execute_task(task, project_path, runner=default_runner, preflight=True):
             "pr",
             "create",
             "--draft",
+            "--base",
+            "main",
             "--title",
             task["title"],
             "--body",
