@@ -2,7 +2,7 @@ import os
 import tempfile
 import unittest
 
-from workers.agent_executor import execute_minimal_task, target_file_for_task
+from agent_executor import execute_task, target_file
 
 
 class AgentExecutorTests(unittest.TestCase):
@@ -16,12 +16,12 @@ class AgentExecutorTests(unittest.TestCase):
         }
 
         with tempfile.TemporaryDirectory() as project_path:
-            result = execute_minimal_task(project_path, task)
+            result = execute_task(task, project_path)
             expected = os.path.join("backend", "implement-api-endpoints.py")
             path = os.path.join(project_path, expected)
 
-            self.assertEqual(target_file_for_task(task), expected)
-            self.assertEqual(result["files_changed"], [expected])
+            self.assertEqual(target_file(task), expected)
+            self.assertEqual(result, [expected])
             self.assertTrue(os.path.exists(path))
             self.assertFalse(os.path.exists(os.path.join(project_path, "docs", "backend")))
 

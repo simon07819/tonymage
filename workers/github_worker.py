@@ -3,7 +3,7 @@ import re
 import subprocess
 import unicodedata
 
-from workers.agent_executor import execute_minimal_task
+from agent_executor import execute_task as execute_code_task
 
 
 PROTECTED_BRANCHES = {"main", "master"}
@@ -103,9 +103,8 @@ def execute_task(task, project_path, runner=default_runner, preflight=True):
 
     print(f"Creating branch: {branch}")
     _run(["git", "checkout", "-b", branch], project_path, runner)
-    execution = execute_minimal_task(project_path, task)
-    print(f"Execution plan: {'; '.join(execution['plan'])}")
-    print(f"Files changed: {', '.join(execution['files_changed'])}")
+    files_changed = execute_code_task(task, project_path)
+    print(f"Files changed: {', '.join(files_changed)}")
 
     status_after = _run(["git", "status", "--porcelain"], project_path, runner)
     if not status_after:
@@ -139,7 +138,7 @@ def execute_task(task, project_path, runner=default_runner, preflight=True):
         "task_id": task.get("id"),
         "branch": branch,
         "pr_url": pr_url,
-        "files_changed": execution["files_changed"],
+        "files_changed": files_changed,
     }
 
 
