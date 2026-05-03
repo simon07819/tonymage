@@ -6,10 +6,11 @@
   "acceptance_criteria": "Compliance and governance feature is fully functional and ensures project security and performance.",
   "estimated_cost_usd": 500,
   "branch_name": "feature/compliance-governance",
-  "status": "completed_real",
+  "status": "failed",
   "mode": "REAL",
   "branch": "ai-company/task-20-implement-compliance-and-governance",
   "started_at": "2026-05-03T04:29:04.497810",
-  "pr_url": "https://github.com/simon07819/tonymage/pull/20",
-  "completed_at": "2026-05-03T04:29:07.314704"
+  "completed_at": "2026-05-03T04:29:07.314704",
+  "error": "Refusing to work: git status is not clean",
+  "failed_at": "2026-05-03T04:37:42.663726"
 }
