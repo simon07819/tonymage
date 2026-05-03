@@ -61,6 +61,10 @@ def _run(command, cwd, runner=default_runner):
 
 
 def ensure_ready(project_path, runner=default_runner):
+    current = _current_branch(project_path, runner)
+    if current != "main":
+        raise WorkerPreflightError(f"Refusing to work: current branch must be main, got {current}")
+
     status = _run(["git", "status", "--porcelain"], project_path, runner)
     if status:
         raise WorkerPreflightError("Refusing to work: git status is not clean")
@@ -84,6 +88,63 @@ def ensure_ready(project_path, runner=default_runner):
 
 def _current_branch(project_path, runner=default_runner):
     return _run(["git", "branch", "--show-current"], project_path, runner)
+
+
+def current_branch(project_path, runner=default_runner):
+    return _current_branch(project_path, runner)
+
+
+def branch_exists(project_path, branch, runner=default_runner):
+    local = runner(["git", "show-ref", "--verify", f"refs/heads/{branch}"], project_path)
+    if local.returncode == 0:
+        return True
+
+    remote = runner(["git", "ls-remote", "--exit-code", "--heads", "origin", branch], project_path)
+    return remote.returncode == 0
+
+
+def unique_branch_name(project_path, base_branch, runner=default_runner):
+    branch = base_branch
+    version = 2
+    while branch_exists(project_path, branch, runner):
+        branch = f"{base_branch}-v{version}"
+        version += 1
+    return branch
+
+
+def create_branch(project_path, branch, runner=default_runner):
+    _run(["git", "checkout", "-b", branch], project_path, runner)
+
+
+def has_uncommitted_changes(project_path, runner=default_runner):
+    return bool(_run(["git", "status", "--porcelain"], project_path, runner))
+
+
+def cleanup_uncommitted_changes(project_path, runner=default_runner):
+    status = _run(["git", "status", "--porcelain"], project_path, runner)
+    if not status:
+        return
+
+    _run(["git", "restore", "--staged", "."], project_path, runner)
+    tracked_dirty = []
+    untracked = []
+    for line in status.splitlines():
+        path = line[3:]
+        if line.startswith("?? "):
+            untracked.append(path)
+        else:
+            tracked_dirty.append(path)
+
+    if tracked_dirty:
+        _run(["git", "restore", "--worktree", *tracked_dirty], project_path, runner)
+    for path in untracked:
+        full_path = os.path.join(project_path, path)
+        if os.path.isfile(full_path):
+            os.remove(full_path)
+
+
+def checkout_main(project_path, runner=default_runner):
+    _run(["git", "checkout", "main"], project_path, runner)
 
 
 def write_task_run_summary(project_path, task):
@@ -122,7 +183,7 @@ def execute_task(task, project_path, runner=default_runner, preflight=True):
     if not os.path.isdir(project_path):
         raise TaskValidationError(f"project_path does not exist: {project_path}")
 
-    branch = safe_branch_name(task)
+    branch = task.get("branch") or safe_branch_name(task)
 
     if branch.split("/")[-1] in PROTECTED_BRANCHES:
         raise WorkerPreflightError(f"Refusing to use protected branch: {branch}")
@@ -130,8 +191,9 @@ def execute_task(task, project_path, runner=default_runner, preflight=True):
     if preflight:
         ensure_ready(project_path, runner)
 
-    print(f"Creating branch: {branch}")
-    _run(["git", "checkout", "-b", branch], project_path, runner)
+    if _current_branch(project_path, runner) != branch:
+        print(f"Creating branch: {branch}")
+        create_branch(project_path, branch, runner)
     output_path = write_task_run_summary(project_path, task)
     print(f"Wrote task run summary: {output_path}")
 
@@ -152,6 +214,8 @@ def execute_task(task, project_path, runner=default_runner, preflight=True):
             "pr",
             "create",
             "--draft",
+            "--base",
+            "main",
             "--title",
             task["title"],
             "--body",
@@ -186,5 +250,5 @@ def commit_and_push_status_update(project_path, task, branch, runner=default_run
         project_path,
         runner,
     )
-    _run(["git", "push"], project_path, runner)
+    _run(["git", "push", "-u", "origin", branch], project_path, runner)
     return True
