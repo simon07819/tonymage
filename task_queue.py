@@ -40,11 +40,18 @@ def list_task_files(project_path=DEFAULT_PROJECT):
 def _task_sort_key(task_file):
     task = load_task_file(task_file)
     task_id = task.get("id")
+    priority_order = {
+        "urgent": 0,
+        "high": 1,
+        "normal": 2,
+        "low": 3,
+    }
+    priority = priority_order.get(task.get("priority", "normal"), 2)
     if isinstance(task_id, int):
-        return (0, task_id)
+        return (priority, 0, task_id)
     if isinstance(task_id, str) and task_id.isdigit():
-        return (0, int(task_id))
-    return (1, str(task_id))
+        return (priority, 0, int(task_id))
+    return (priority, 1, str(task_id))
 
 
 def next_queued_task(project_path=DEFAULT_PROJECT):

@@ -205,11 +205,80 @@ def doctor(project_path, repo_path):
     return 0
 
 
+def repo_ready(repo_path):
+    try:
+        preflight(repo_path)
+        return True, "ready"
+    except GitHubWorkerError as exc:
+        return False, str(exc)
+
+
+def plan(project_path, repo_path):
+    task_file, task = next_queued_task(project_path)
+    if not task:
+        print("next task: none")
+        return 0
+
+    ready, reason = repo_ready(repo_path)
+    try:
+        branch = unique_branch(repo_path, safe_branch_name(task))
+    except GitHubWorkerError:
+        branch = safe_branch_name(task)
+    print(f"next task: {task.get('id')} - {task.get('title')}")
+    print(f"priority: {task.get('priority', 'normal')}")
+    print(f"task file: {task_file}")
+    print(f"branch: {branch}")
+    print(f"repo ready: {str(ready).lower()}")
+    if not ready:
+        print(f"reason: {reason}")
+    return 0
+
+
+def review(project_path, repo_path):
+    branches = run_cmd(["git", "branch", "--list", "ai-company/task-*"], repo_path, check=False)
+    print("local task branches:")
+    if branches.stdout.strip():
+        for line in branches.stdout.splitlines():
+            print(f"- {line.strip().lstrip('* ').strip()}")
+    else:
+        print("- none")
+
+    completed = []
+    failed = []
+    running = []
+    for task_file in list_task_files(project_path):
+        try:
+            task = load_task_file(task_file)
+        except Exception:
+            continue
+        status = task.get("status")
+        item = f"{task.get('id')} - {task.get('title')}"
+        if status == "completed_real":
+            completed.append(item)
+        elif status == "failed":
+            failed.append(item)
+        elif status == "running":
+            running.append(item)
+
+    print("completed_real tasks:")
+    for item in completed or ["none"]:
+        print(f"- {item}")
+    print("failed tasks:")
+    for item in failed or ["none"]:
+        print(f"- {item}")
+    print("running tasks:")
+    for item in running or ["none"]:
+        print(f"- {item}")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--once", action="store_true", help="Run exactly one queued task.")
     parser.add_argument("--limit", type=int, help="Run up to this many queued tasks.")
     parser.add_argument("--doctor", action="store_true", help="Print worker diagnostics.")
+    parser.add_argument("--plan", action="store_true", help="Plan the next queued task without executing it.")
+    parser.add_argument("--review", action="store_true", help="Review local worker task state.")
     parser.add_argument("--project-path", default=DEFAULT_PROJECT, help="AI Company project path.")
     parser.add_argument("--repo-path", default=os.getcwd(), help="Git repo where the worker commits.")
     args = parser.parse_args()
@@ -228,6 +297,10 @@ def main():
 
     if args.doctor:
         return doctor(project_path, repo_path)
+    if args.plan:
+        return plan(project_path, repo_path)
+    if args.review:
+        return review(project_path, repo_path)
 
     completed = 0
     for _ in range(limit):
