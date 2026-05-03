@@ -6,6 +6,10 @@
   "acceptance_criteria": "Collaboration tools are fully functional and integrated with task management feature.",
   "estimated_cost_usd": 4000,
   "branch_name": "feature/collaboration-tools",
-  "status": "queued",
-  "mode": "DRY_RUN"
+  "status": "failed",
+  "mode": "REAL",
+  "branch": "ai-company/task-3-implement-collaboration-tools",
+  "started_at": "2026-05-03T05:30:04.590120",
+  "error": "Command failed: git push -u origin ai-company/task-3-implement-collaboration-tools\nTo https://github.com/simon07819/tonymage.git\n ! [rejected]        ai-company/task-3-implement-collaboration-tools -> ai-company/task-3-implement-collaboration-tools (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/simon07819/tonymage.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. Integrate the remote changes (e.g.\nhint: 'git pull ...') before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details.",
+  "failed_at": "2026-05-03T05:30:05.143490"
 }
