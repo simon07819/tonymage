@@ -6,6 +6,8 @@
   "acceptance_criteria": "Database schema is fully functional and optimized for project data storage.",
   "estimated_cost_usd": 1500,
   "branch_name": "feature/database-schema",
-  "status": "queued",
-  "mode": "DRY_RUN"
+  "status": "running",
+  "mode": "REAL",
+  "branch": "ai-company/task-6-develop-database-schema",
+  "started_at": "2026-05-03T04:09:25.216062"
 }
