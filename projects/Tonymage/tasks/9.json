@@ -6,8 +6,10 @@
   "acceptance_criteria": "API endpoints are fully functional and secure.",
   "estimated_cost_usd": 2000,
   "branch_name": "feature/api-endpoints",
-  "status": "running",
+  "status": "completed_real",
   "mode": "REAL",
   "branch": "ai-company/task-9-implement-api-endpoints-v3",
-  "started_at": "2026-05-10T01:24:00.855796"
+  "started_at": "2026-05-10T01:24:00.855796",
+  "pr_url": "https://github.com/simon07819/tonymage/pull/127",
+  "completed_at": "2026-05-10T01:24:04.110372"
 }
