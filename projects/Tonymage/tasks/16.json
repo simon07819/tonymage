@@ -6,6 +6,8 @@
   "acceptance_criteria": "Caching feature is fully functional and ensures project performance and scalability.",
   "estimated_cost_usd": 500,
   "branch_name": "feature/caching",
-  "status": "queued",
-  "mode": "DRY_RUN"
+  "status": "running",
+  "mode": "REAL",
+  "branch": "ai-company/task-16-implement-caching-v2",
+  "started_at": "2026-05-10T00:54:52.742100"
 }
