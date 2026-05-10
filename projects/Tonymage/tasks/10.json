@@ -6,6 +6,8 @@
   "acceptance_criteria": "Testing framework is fully functional and covers all project features.",
   "estimated_cost_usd": 1000,
   "branch_name": "feature/testing-framework",
-  "status": "queued",
-  "mode": "DRY_RUN"
+  "status": "running",
+  "mode": "REAL",
+  "branch": "ai-company/task-10-develop-testing-framework-v2",
+  "started_at": "2026-05-10T00:51:26.284428"
 }
