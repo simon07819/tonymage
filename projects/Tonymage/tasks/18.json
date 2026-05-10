@@ -6,6 +6,8 @@
   "acceptance_criteria": "WAF feature is fully functional and ensures project security and performance.",
   "estimated_cost_usd": 500,
   "branch_name": "feature/waf",
-  "status": "queued",
-  "mode": "DRY_RUN"
+  "status": "running",
+  "mode": "REAL",
+  "branch": "ai-company/task-18-implement-web-application-firewall-waf-v3",
+  "started_at": "2026-05-10T01:31:01.951102"
 }
