@@ -6,8 +6,10 @@
   "acceptance_criteria": "Frontend UI components are fully functional and visually appealing.",
   "estimated_cost_usd": 2500,
   "branch_name": "feature/frontend-ui",
-  "status": "running",
+  "status": "completed_real",
   "mode": "REAL",
   "branch": "ai-company/task-8-develop-frontend-ui-components-v3",
-  "started_at": "2026-05-10T01:24:00.606141"
+  "started_at": "2026-05-10T01:24:00.606141",
+  "pr_url": "https://github.com/simon07819/tonymage/pull/126",
+  "completed_at": "2026-05-10T01:24:04.092748"
 }
