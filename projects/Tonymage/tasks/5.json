@@ -6,8 +6,10 @@
   "acceptance_criteria": "User authentication is implemented and working as expected",
   "estimated_cost_usd": 120,
   "branch_name": "feature/user-authentication",
-  "status": "running",
+  "status": "completed_real",
   "mode": "REAL",
   "branch": "ai-company/task-5-implement-user-authentication-and-authorization-v15",
-  "started_at": "2026-05-10T01:54:42.166206"
+  "started_at": "2026-05-10T01:54:42.166206",
+  "pr_url": "https://github.com/simon07819/tonymage/pull/144",
+  "completed_at": "2026-05-10T01:54:45.680501"
 }
