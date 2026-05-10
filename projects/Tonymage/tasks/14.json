@@ -6,6 +6,8 @@
   "acceptance_criteria": "Backup and recovery feature is fully functional and ensures data integrity.",
   "estimated_cost_usd": 500,
   "branch_name": "feature/backup-recovery",
-  "status": "queued",
-  "mode": "DRY_RUN"
+  "status": "running",
+  "mode": "REAL",
+  "branch": "ai-company/task-14-develop-backup-and-recovery-v3",
+  "started_at": "2026-05-10T01:28:20.272856"
 }
