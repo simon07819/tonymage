@@ -6,8 +6,10 @@
   "acceptance_criteria": "Deployment script is fully functional and automates project deployment.",
   "estimated_cost_usd": 500,
   "branch_name": "feature/deployment-script",
-  "status": "running",
+  "status": "completed_real",
   "mode": "REAL",
   "branch": "ai-company/task-12-develop-deployment-script-v3",
-  "started_at": "2026-05-10T01:27:08.204345"
+  "started_at": "2026-05-10T01:27:08.204345",
+  "pr_url": "https://github.com/simon07819/tonymage/pull/129",
+  "completed_at": "2026-05-10T01:27:11.757614"
 }
