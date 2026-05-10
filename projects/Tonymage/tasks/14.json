@@ -6,8 +6,10 @@
   "acceptance_criteria": "Backup and recovery feature is fully functional and ensures data integrity.",
   "estimated_cost_usd": 500,
   "branch_name": "feature/backup-recovery",
-  "status": "running",
+  "status": "completed_real",
   "mode": "REAL",
   "branch": "ai-company/task-14-develop-backup-and-recovery-v3",
-  "started_at": "2026-05-10T01:28:20.272856"
+  "started_at": "2026-05-10T01:28:20.272856",
+  "pr_url": "https://github.com/simon07819/tonymage/pull/132",
+  "completed_at": "2026-05-10T01:28:23.794424"
 }
