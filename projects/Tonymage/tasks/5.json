@@ -6,9 +6,11 @@
   "acceptance_criteria": "User authentication and authorization feature is fully functional and secure.",
   "estimated_cost_usd": 1000,
   "branch_name": "feature/user-authentication",
-  "status": "running",
+  "status": "completed_real",
   "mode": "REAL",
   "branch": "ai-company/task-5-implement-user-authentication-and-authorization-v13",
   "locked_at": "2026-05-10T00:47:46.586472",
-  "started_at": "2026-05-10T00:47:46.586762"
+  "started_at": "2026-05-10T00:47:46.586762",
+  "pr_url": "https://github.com/simon07819/tonymage/pull/104",
+  "completed_at": "2026-05-10T00:47:50.039963"
 }
